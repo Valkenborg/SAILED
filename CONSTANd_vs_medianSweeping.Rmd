@@ -16,6 +16,7 @@ params:
   input_data_p: 'data/input_data.rds'
   suffix_p: ''
   load_outputdata_p: FALSE
+  save_outputdata_p: FALSE
   subsample_p: 0
 ---
   
@@ -370,10 +371,20 @@ Clearly, the empirical results _tend towards_ the theoretical truth, but not a s
 
 Both CONSTANd and median sweeping give rise to very similar distributions.
 
-```{r, eval=length(spiked.proteins)>0}
+```{r}
 # plot theoretical value (horizontal lines) and violin per variant
-violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition)
+if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition) else violinplot_ils(lapply(dat.dea, function(x) x[,logFC.cols]), referenceCondition,  show_truth = FALSE)
 ```
+
+```{r, echo=FALSE, eval=params$save_outputdata_p}
+# save data sets
+save(dat.norm.w,
+     dat.norm.summ.w
+     ,dat.norm.summ.l
+     ,dat.norm.summ.w2
+     ,dat.dea, file=paste0('constand_vs_mediansweeping_outdata', params$suffix_p, '.rda'))
+```
+
 
 # Conclusions
 

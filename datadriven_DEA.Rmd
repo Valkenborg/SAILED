@@ -14,8 +14,9 @@ editor_options:
   chunk_output_type: console
 params:
   input_data_p: 'data/input_data.rds'
-  suffix_p: 'msstatstmt'
+  suffix_p: ''
   load_outputdata_p: FALSE
+  save_outputdata_p: FALSE
   subsample_p: 0
 ---
   
@@ -190,9 +191,9 @@ dat.norm.summ.w2 <- dat.norm.summ.w %>% pivot_wider(names_from = Run, values_fro
 dat.nonnorm.summ.w2 <- dat.nonnorm.summ.w %>% pivot_wider(names_from = Run, values_from = all_of(channelNames), names_glue = "{Run}:{.value}")
 ```
 
-<!-- ```{r, echo=FALSE, eval=params$load_outputdata_p} -->
-<!-- load(paste0('datadriven_DEA_outdata_', params$suffix_p, '.rda')) -->
-<!-- ``` -->
+```{r, echo=FALSE, eval=params$load_outputdata_p}
+load(paste0('datadriven_DEA_outdata', params$suffix_p, '.rda'))
+```
 
 ## Boxplots
 
@@ -316,15 +317,13 @@ display_dataframe_head(dat.dea$moderated_ttest)
 
 ## Wilcoxon test
 
-The Wilcoxon rank-sum test ([Wilcoxon, F.](http://doi.org/10.1007/978-1-4612-4380-9)), for brevity referred to as 'Wilcoxon' test, is a non-parametric rank-based test for comparing independent observations from two groups (i.e., biological conditions).
-For each protein separately, the test is applied to each condition w.r.t. the reference condition `r referenceCondition`. 
+The Wilcoxon test ([Wilcoxon, F.](http://doi.org/10.1007/978-1-4612-4380-9)) is a non-parametric rank-based test for comparing two groups (i.e., biological conditions).
+For each protein separately, the test is applied to each condition w.r.t. the reference condition `r referenceCondition`.
 
-Note that the Wilcoxon test employs ranks of quantification values, so fold changes are not formally provided by this testing procedure. However, our wrapper function `Wilcoxon_test` provides with two ways of (artificially) computing fold changes via `logFC.method` argument:
-
-*  `'diff'`: $\bar{x}-\bar{y}$ 
-*  `'ratio'`: $log_2(\frac{\bar{x}}{\bar{y}})$
-
-where $\bar{}$ denotes the arithmetic mean operator, x and y are quantification values from samples belonging to a selected biological condition and the reference condition, respectively. The assumption is that the quantification values are on the log scale, so in the case of `'ratio'`, we first exponentiate them with base 2 to then calculate the arithmetic means. In this notebook we present the `'ratio'` protein fold changes.
+_@Piotr: uncomment the explanation of Wilcoxon fold changes if desired, otherwise explain why not_
+<!-- # Wilcoxon rank-sum test employs ranks of quantification values, therefore logFC must be computed manually: -->
+<!-- #   if logFC.method='diff': difference of arithmetic means computed on log2 scale -->
+<!-- #   if logFC.method='ratio': log2 ratio of arithmetic means computed on raw scale -->
 
 ```{r, eval=!params$load_outputdata_p}
 otherConditions <- dat.l %>% distinct(Condition) %>% pull(Condition) %>% as.character %>% sort
@@ -402,7 +401,7 @@ For all conditions, the q-values of the different variants correlate moderately 
 scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
 ```
 
-On the other hand, the fold changes are very well correlated for all component variants, across all conditions, though the Wilcoxon estimates to a slightly lesser extent. Actually, the estimates corresponding to moderated t-test, permutation test, and ROTS are identical as all these methods use the difference between group averages in their test statistics.
+On the other hand, the fold changes are very well correlated for all component variants, across all conditions, though the Wilcoxon estimates to a slightly lesser extent.
 
 ```{r}
 scatterplot_ils(dat.dea, logFC.cols, 'log2FC', spiked.proteins, referenceCondition)
@@ -421,20 +420,20 @@ for (i in 1:n.contrasts){
 
 A good way to assess the general trend of the fold change estimates on a more 'macroscopic' scale is to make a violin plot. Ideally, there will be some spike-in proteins that attain the expected fold change  (red dashed line) that corresponds to their condition, while most (background) protein log2 fold changes are situated around zero.
 
-```{r, eval=length(spiked.proteins)>0}
+```{r}
 # plot theoretical value (horizontal lines) and violin per variant
-violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition)
+if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition) else violinplot_ils(lapply(dat.dea, function(x) x[,logFC.cols]), referenceCondition,  show_truth = FALSE)
 ```
 
-<!-- ```{r, echo=!params$load_outputdata_p} -->
-<!-- save(dat.nonnorm.summ.l -->
-<!--      ,dat.norm.summ.l -->
-<!--      ,dat.nonnorm.summ.w -->
-<!--      ,dat.norm.summ.w -->
-<!--      ,dat.nonnorm.summ.w2 -->
-<!--      ,dat.norm.summ.w2 -->
-<!--      ,dat.dea, file=paste0('datadriven_summarization_outdata_', params$suffix_p, '.rda')) -->
-<!-- ``` -->
+```{r, echo=FALSE, eval=params$save_outputdata_p}
+save(dat.nonnorm.summ.l
+     ,dat.norm.summ.l
+     ,dat.nonnorm.summ.w
+     ,dat.norm.summ.w
+     ,dat.nonnorm.summ.w2
+     ,dat.norm.summ.w2
+     ,dat.dea, file=paste0('datadriven_DEA_outdata', params$suffix_p, '.rda'))
+```
 
 # Conclusions
 

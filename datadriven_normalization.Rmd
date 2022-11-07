@@ -14,8 +14,9 @@ editor_options:
   chunk_output_type: console 
 params:
   input_data_p: 'data/input_data.rds'
-  suffix_p: 'msstatstmt'
+  suffix_p: ''
   load_outputdata_p: FALSE
+  save_outputdata_p: FALSE
   subsample_p: 0   
 ---
   
@@ -48,7 +49,7 @@ library(psych)
 library(limma)
 library(tidyverse)
 library(preprocessCore)
-library(CONSTANd)  # install from source: https://github.com/PDiracDelta/CONSTANd/
+library(CONSTANd)  
 library(NOMAD)  # devtools::install_github("carlmurie/NOMAD")
 source('util/other_functions.R')
 source('util/plotting_functions.R')
@@ -198,7 +199,7 @@ Within each Run and within each Channel, we replace multiple related observation
 ```{r, eval=!params$load_outputdata_p}
 # normalized data
 dat.norm.summ.w <- lapply(dat.norm.w, function(x){
-  y <- x %>% group_by(Run, Protein, Peptide) %>% summarise_at(.vars = channelNames, .funs = median, na.rm=T) %>% summarise_at(.vars = channelNames, .funs = median, na.rm=T) %>% ungroup()
+  y <- x %>% group_by(Run, Protein, Peptide) %>% summarise_at(.vars = channelNames, .funs = median, na.rm=T) %>% summarise(across(channelNames, .fns = median, na.rm=T)) %>% ungroup()
   return(y)})
 ```
 
@@ -207,7 +208,7 @@ Let's also summarize the non-normalized data for comparison later on.
 # non-normalized data
 # group by (run,)protein,peptide then summarize twice (once on each level)
 # add select() statement because summarise_at is going bananas over character columns
-dat.nonnorm.summ.w <- dat.unit.w %>% group_by(Run, Protein, Peptide) %>% select(Run, Protein, Peptide, channelNames) %>% summarise_at(.vars = channelNames, .funs = median) %>% select(Run, Protein, channelNames) %>% summarise_at(.vars = channelNames, .funs = median) %>% ungroup()
+dat.nonnorm.summ.w <- dat.unit.w %>% group_by(Run, Protein, Peptide) %>% select(Run, Protein, Peptide, channelNames) %>% summarise(across(channelNames, .fns = median)) %>% select(Run, Protein, channelNames) %>% summarise(across(channelNames, .fns = median)) %>% ungroup()
 ```
 
 ```{r, eval=!params$load_outputdata_p}
@@ -276,9 +277,9 @@ Before getting to the DEA section, let's do some basic quality control and take 
 dat.nonnorm.summ.w2 <- dat.nonnorm.summ.w %>% pivot_wider(names_from = Run, values_from = all_of(channelNames), names_glue = "{Run}:{.value}")
 ```
 
-<!-- ```{r, eval=params$load_outputdata_p} -->
-<!-- load(paste0('datadriven_normalization_outdata_', params$suffix_p, '.rda')) -->
-<!-- ``` -->
+```{r, eval=params$load_outputdata_p}
+load(paste0('datadriven_normalization_outdata', params$suffix_p, '.rda'))
+```
 
 ## Boxplots
 
@@ -470,20 +471,20 @@ A good way to assess the general trend of the fold change estimates on a more 'm
 Clearly, the empirical results _tend towards_ the theoretical truth, but not a single observation attained the fold change it should have attained. There is clearly a strong bias towards zero fold change, which may partly be explained by the ratio compression phenomenon in mass spectrometry, although the effect seems quite extreme here.
 In general, all fold change distributions (except those of CONSTANd whose distribution is too narrow) are quite similar, even those of the raw data, although it is noticeably more spread out.
 
-```{r, eval=length(spiked.proteins)>0}
+```{r}
 # plot theoretical value (horizontal lines) and violin per variant
-violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition)
+if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition) else violinplot_ils(lapply(dat.dea, function(x) x[,logFC.cols]), referenceCondition,  show_truth = FALSE)
 ```
 
-<!-- ```{r, echo=!params$load_outputdata_p} -->
-<!-- save(dat.nonnorm.summ.l -->
-<!--      ,dat.norm.summ.l -->
-<!--      ,dat.nonnorm.summ.w -->
-<!--      ,dat.norm.summ.w -->
-<!--      ,dat.nonnorm.summ.w2 -->
-<!--      ,dat.norm.summ.w2 -->
-<!--      ,dat.dea, file=paste0('datadriven_summarization_outdata_', params$suffix_p, '.rda')) -->
-<!-- ``` -->
+```{r, echo=FALSE, eval=params$save_outputdata_p}
+save(dat.nonnorm.summ.l
+     ,dat.norm.summ.l
+     ,dat.nonnorm.summ.w
+     ,dat.norm.summ.w
+     ,dat.nonnorm.summ.w2
+     ,dat.norm.summ.w2
+     ,dat.dea, file=paste0('datadriven_normalization_outdata', params$suffix_p, '.rda'))
+```
 
 # Conclusions
 
