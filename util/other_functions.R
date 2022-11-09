@@ -391,11 +391,11 @@ wilcoxon_test <- function(dat, sample.info, referenceCondition, otherConditions,
   } # moderated q-value corresponding to the moderated t-statistic
   
   # incorporate entity type into colnames to overwrite identical factor names
-  colnames(logFC) <- paste0('logFC_', otherConditions)
+  #colnames(logFC) <- paste0('logFC_', otherConditions)
   colnames(t.mod) <- paste0('t.mod', '_', otherConditions)
   colnames(p.mod) <- paste0('p.mod', '_', otherConditions)
   colnames(q.mod) <- paste0('q.mod', '_', otherConditions)
-  results <- data.frame(logFC, t.mod, p.mod, q.mod)
+  results <- data.frame(t.mod, p.mod, q.mod)
   rownames(results) <- proteins
   return(results)
 }
@@ -448,11 +448,11 @@ permutation_test_manual <- function(dat, sample.info, referenceCondition, otherC
   } # moderated q-value corresponding to the moderated t-statistic
   
   # incorporate entity type into colnames to overwrite identical factor names
-  colnames(logFC) <- paste0('logFC_', otherConditions)
+  #colnames(logFC) <- paste0('logFC_', otherConditions)
   colnames(t.mod) <- paste0('t.mod', '_', otherConditions)
   colnames(p.mod) <- paste0('p.mod', '_', otherConditions)
   colnames(q.mod) <- paste0('q.mod', '_', otherConditions)
-  results <- data.frame(logFC, t.mod, p.mod, q.mod)
+  results <- data.frame(t.mod, p.mod, q.mod)
   rownames(results) <- proteins
   return(results)
 }
