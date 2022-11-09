@@ -87,16 +87,26 @@ knitr::kable(df) %>% kable_styling(full_width = F)
 ## Filtering and preparation
 
 In the file `data_prep.R` you can find the details of all data preparation steps. Here, we list which PSMs were discarded or modified and why:
+
 1. Use only data from Runs 1, 2, 4, 5.
-1. Discard reference samples (TMT channels 126 and 131).
-1. Discard PSMs with shared peptides (as done in [Ting et al.](https://doi.org/10.1074/mcp.RA120.002105)).
-1. Add simulated variability (see next section).
-1. Reconstruct missing MS1 Intensity column based on MS2 intensities (necessary for some component variants).
-1. Discard duplicate PSMs due to the use of multiple search engine instances (which only change the score).
-1. Discard PSMs of proteins that appear both in the background and spike-in.
-1. Discard PSMs with Isolation Interference (%) > 30.
-1. Discard PSMs with NA entries in the quantification channels.
-1. Discard PSMs of one-hit-wonder proteins.
+ 
+2. Discard reference samples (TMT channels 126 and 131).
+ 
+3. Discard PSMs with shared peptides (as done in [Ting et al.](https://doi.org/10.1074/mcp.RA120.002105)).
+ 
+4. Add simulated variability (see next section).
+
+5. Reconstruct missing MS1 Intensity column based on MS2 intensities (necessary for some component variants).
+
+6. Discard duplicate PSMs due to the use of multiple search engine instances (which only change the score).
+
+7. Discard PSMs of proteins that appear both in the background and spike-in.
+
+8. Discard PSMs with Isolation Interference (%) > 30.
+
+9. Discard PSMs with NA entries in the quantification channels.
+
+10. Discard PSMs of one-hit-wonder proteins.
 
 ## Simulated biological variability
 
@@ -208,7 +218,7 @@ Our idea behind this series of notebooks is not only to educate but also to invi
 
 ### input data
 
-The [data_prep.R](util/data_prep.R) script process the data in a way required by our notebook files.
+The [data_prep.R](util/data_prep.R) script processes the data in a way required by our notebook files.
 This file has been written such that it fits the particular dataset used in our manuscript. 
 With a little bit of effort, however, one can modify it such that it can become applicable to other datasets as well. 
 
@@ -231,12 +241,13 @@ The output of the script is a file created in the `data` folder called `input_da
 ```{r}
 temp <- readRDS("data/input_data.rds")
 
-# dat.l
+cat("dat.l")
 display_dataframe_head(temp$dat.l)
 
-# dat.w
+cat("dat.w")
 display_dataframe_head(temp$dat.w)
 
+cat("data.params")
 temp$data.params
 ```
 
@@ -254,7 +265,7 @@ Each notebook has been supplied with 5 parameters controlling various aspects of
 
 ### Master program
 
-We also prepared an R script with which it is possible to conveniently knit all notebooks from the level of one file. This program is called `data/master_program.R`. This program refers to the notebook parameter described above.
+We also prepared an R script with which it is possible to conveniently knit all notebooks from the level of one file. This program is called `data/master_program.R`, and inside you will find references to the R markdown parameters explained above.
 
 ### Install the required R packages
 

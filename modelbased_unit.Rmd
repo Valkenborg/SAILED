@@ -354,7 +354,7 @@ Now, the most important part: let's find out how our component variants have aff
 
 A confusion matrix shows how many true and false positives/negatives each variant has given rise to. Spiked proteins that are DE are true positives, background proteins that are not DE are true negatives. We calculate this matrix for all conditions and then calculate some other informative metrics based on the confusion matrices: accuracy, sensitivity, specificity, positive predictive value and negative predictive value. 
 
-In case of the `0.125 vs 0.5` and `1 vs 0.5` contrasts, only the log of intensities provides good outcomes. The biological difference in the `0.667 vs 0.5` contrast, however, seems to be too small to be picked by the proposed modelling approach, regardless of the unit scale. Moreover, the reason for the subpar performance of untransformed intensities and ratios that we observe here can lie in the flawed log fold change estimation and/or erroneous variance structure in the data. Hopefully, this conundrum can be explained after inspecting next visualisations.
+In case of the `0.125 vs 0.5` and `1 vs 0.5` contrasts, only the log of intensities provides good outcomes. The biological difference in the `0.667 vs 0.5` contrast, however, seems to be too small to be picked by the proposed modelling approach, regardless of the unit scale. Moreover, the reason for the subpar performance of untransformed intensities and ratios that we observe here can lie in the flawed log fold change estimation and/or erroneous variance structure in the data. Hopefully, this conundrum can be explained after inspecting the forthcoming visualisations.
 
 ```{r, results='asis'}
 cm <- conf_mat(dat.dea, 'q.mod', 0.05, spiked.proteins)
@@ -367,10 +367,13 @@ To see whether the three Unit scales produce similar results on the detailed lev
 
 First, the q-values of spike-in proteins associated with intensities on the original scale and ratios are generally larger. 
 
+```{r}
+scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
+```
+
 Second, the distribution of fold changes stemming from the analysis of untransformed intensities and ratios are unnaturally wide, both for the spike-in and background proteins. If we recall that the boxplots of normalized intensity and ratio values were centered around zero and the technical comment #2, we can conjecture that the terms $m$ and $m + r_c$ can be also close to zero, and therefore the entire $\log FC = \log \frac {m + r_c}{m}$ can be unstable or even undefined.
 
-```{r, fig.width=12, fig.height=10}
-scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
+```{r}
 scatterplot_ils(dat.dea, logFC.cols, 'log2FC', spiked.proteins, referenceCondition)
 ```
 
@@ -400,7 +403,7 @@ if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spik
 
 # Conclusions
 
-In this notebook we demonstrated that one should not use (untransformed) intensities in a model-based normalization as the former putatively exhibit multiplicative biases, but the latter can only apply additive corrections. Mixing additive and multiplicative scales tends to give distorted results, including when using (intensity-based) ratios. 
+In this notebook we demonstrated that one should not use (untransformed) intensities in a model-based normalization as the former putatively exhibit multiplicative biases, but the latter can only apply additive corrections. Mixing additive and multiplicative scales tends to give distorted results, including the usage of (intensity-based) ratios. 
 
 # Session information
 

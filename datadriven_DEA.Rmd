@@ -137,7 +137,7 @@ dat.norm.w <- emptyList(variant.names)
 ## median sweeping (1)
 
 Median sweeping means subtracting from each PSM quantification value the spectrum median (i.e., the row median computed across samples/channels) and the sample median (i.e., the column median computed across features). If the unit scale is set to intensities or ratios, the multiplicative variant of this procedure is applied: subtraction is replaced by division.
-First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g. 
+First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g). 
 No need to split this per Run, because each row in this semi-wide format contains only values from one Run and each median calculation is independent of the other rows.
 
 ```{r, eval=!params$load_outputdata_p}
@@ -320,18 +320,13 @@ display_dataframe_head(dat.dea$moderated_ttest)
 The Wilcoxon test ([Wilcoxon, F.](http://doi.org/10.1007/978-1-4612-4380-9)) is a non-parametric rank-based test for comparing two groups (i.e., biological conditions).
 For each protein separately, the test is applied to each condition w.r.t. the reference condition `r referenceCondition`.
 
-_@Piotr: uncomment the explanation of Wilcoxon fold changes if desired, otherwise explain why not_
-<!-- # Wilcoxon rank-sum test employs ranks of quantification values, therefore logFC must be computed manually: -->
-<!-- #   if logFC.method='diff': difference of arithmetic means computed on log2 scale -->
-<!-- #   if logFC.method='ratio': log2 ratio of arithmetic means computed on raw scale -->
-
 ```{r, eval=!params$load_outputdata_p}
 otherConditions <- dat.l %>% distinct(Condition) %>% pull(Condition) %>% as.character %>% sort
 otherConditions <- otherConditions[-match(referenceCondition, otherConditions)]
 dat.dea$Wilcoxon <- wilcoxon_test(dat.norm.summ.w2, sample.info, referenceCondition, otherConditions, logFC.method='ratio')
 ```
 
-For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below.
+For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below. Note that the Wilcoxon test operates on rank therfore log fold changes are not returned by this testing procedure.
 
 ```{r}
 display_dataframe_head(dat.dea$Wilcoxon)
@@ -347,7 +342,7 @@ The final p-values are then computed by comparing the observed test statistic va
 dat.dea$permutation_test <- permutation_test(dat.norm.summ.l, referenceCondition, otherConditions, seed=seed, distribution='exact')
 ```
 
-For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below.
+For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below. Note that log fold changes returned by the permutation test are exactly the same as in the standard t-test/ or moderated t-test/limma.
 
 ```{r}
 display_dataframe_head(dat.dea$permutation_test)
@@ -361,7 +356,7 @@ The Reproducibility-Optimized Test Statistic (ROTS) ([Elo et al.](https://doi.or
 dat.dea$ROTS <- rots_test(dat.norm.summ.w2, sample.info, referenceCondition, otherConditions)
 ```
 
-For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below.
+For each condition, we now get fold change estimates, p-values and q-values (adjusted p-values): see `head` of dataframe below. Note that log fold changes returned by ROTS test are exactly the same as in the standard t-test/ or moderated t-test/limma.
 
 ```{r}
 display_dataframe_head(dat.dea$ROTS)
@@ -401,28 +396,31 @@ For all conditions, the q-values of the different variants correlate moderately 
 scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
 ```
 
-On the other hand, the fold changes are very well correlated for all component variants, across all conditions, though the Wilcoxon estimates to a slightly lesser extent.
-
-```{r}
-scatterplot_ils(dat.dea, logFC.cols, 'log2FC', spiked.proteins, referenceCondition)
-```
+We do not present here the scatter plots of fold changes because from a methodological point of view all variants provide the same values (except the Wilcoxon test that is incompatible with fold change estimation).
 
 ## Volcano plots
 
 The volcano plot combines information on fold changes and statistical significance. The spike-in proteins are colored blue, and immediately it is clear that their fold changes dominate the region of statistical significance, which suggests the experiment and analysis were carried out successfully. The magenta, dashed line indicates the theoretical fold change of the spike-ins.
 
+(Wilcoxon test results are not showed as there are no fold change available)
+
 ```{r}
+# don't create volcano plot for the Wilcoxon test as there are no fold changes available for this variant
+dat.dea.volcano <- dat.dea
+dat.dea.volcano[["Wilcoxon"]] <- NULL
 for (i in 1:n.contrasts){
-  volcanoplot_ils(dat.dea, i, spiked.proteins, referenceCondition)}
+  volcanoplot_ils(dat.dea.volcano, i, spiked.proteins, referenceCondition)}
 ```
 
 ## Violin plots
 
 A good way to assess the general trend of the fold change estimates on a more 'macroscopic' scale is to make a violin plot. Ideally, there will be some spike-in proteins that attain the expected fold change  (red dashed line) that corresponds to their condition, while most (background) protein log2 fold changes are situated around zero.
 
+(Wilcoxon test results are not showed as there are no fold change available)
+
 ```{r}
 # plot theoretical value (horizontal lines) and violin per variant
-if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spiked.proteins, logFC.cols]), referenceCondition) else violinplot_ils(lapply(dat.dea, function(x) x[,logFC.cols]), referenceCondition,  show_truth = FALSE)
+if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea.volcano, function(x) x[spiked.proteins, logFC.cols]), referenceCondition) else violinplot_ils(lapply(dat.dea.volcano, function(x) x[,logFC.cols]), referenceCondition,  show_truth = FALSE)
 ```
 
 ```{r, echo=FALSE, eval=params$save_outputdata_p}
@@ -438,7 +436,7 @@ save(dat.nonnorm.summ.l
 # Conclusions
 
 It seems that the nonparametric methods do not have enough statistical power, even though ROTS is (over-)optimistic, producing low q-values for many background proteins, even compared to the moderated t-test. 
-Though the correlation between their significance estimates is a bit all over the place, all variants do agree on the fold change estimates.
+Though the correlation between their significance estimates is a bit all over the place, all variants do agree on the fold change estimates because the computation method is virtually the same.
 
 # Session information
 

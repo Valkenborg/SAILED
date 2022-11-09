@@ -134,9 +134,19 @@ dat.norm.l <- emptyList(variant.names)
 dat.norm.l <- lapply(dat.norm.l, function(x) x <- dat.summ.l) 
 ```
 
+For the three normalization models, we adopt the following naming convention:
+
+- $y_{i, j(i), q, l, s}$ the reporter ion intensities, 
+- $u$ is the model intercept, 
+- $b_q$ is the multiplexed tandem-MS run effect, 
+- $v_{l(q)}$ corresponds to the quantification channel within MS run effect, 
+- $p_i$ stands for the protein effect, 
+- $f_{(j(i)}$ describes the peptide within protein contribution,
+- $ε_{i,j(i),q,l,s}$ the error term. 
+
 ## LMM1 (peptide-by-run interaction)
 
-We start with a model that corrects the observed reporter ion intensities $y_{i, j(i), q, l, s}$ for imbalance stemming from run $b_q$ and run-channel $v_{l(q)}$ fixed effects, as well as protein $p_i$ and run-protein $b_q \times f_{j(i)}$ random effects:
+We start with a model that corrects the observed reporter ion intensities for imbalance stemming from run $b_q$ and run-channel $v_{l(q)}$ fixed effects, as well as protein $p_i$ and run-peptide $b_q \times f_{j(i)}$ random effects:
 
 $$ \log_2y_{i, j(i), q, l, s} = u + b_q + v_{l(q)} + p_i + (b_q \times f_{j(i)}) + \varepsilon_{i, j(i), q, l, s} $$
 
@@ -149,7 +159,7 @@ dat.norm.l$LMM1$response <- residuals(LMM1)
 
 ## LMM2 (protein-by-run interaction)
 
-In the next variant, we include a random interaction between Run and Protein and keep the Peptide random effect constant across different runs:
+In the next variant, we include a random interaction between Run and Protein, and keep the Peptide random effect constant across different runs:
 
 $$ \log_2y_{i, j(i), q, l, s} = u + b_q + v_{l(q)} + (b_q \times p_i) + f_{j(i)} + \varepsilon_{i, j(i), q, l, s} $$
 
@@ -241,7 +251,7 @@ Now, let's check if these multi-dimensional data contains some kind of grouping;
 
 ### Using all proteins
 
-After LMM2 or LMM3 normalization the samples are very closely grouped according to run instead of the dilution factor. Only LMM1, which contains the peptide-run interaction, restore the correct relation between the samples. This finding, together with conclusions from the **datadrive_normalization** notebook, cannot be overstated as it implies that correcting for peptide-run interaction is of utmost importance in obtaining valid inference from multi-run isobaric labeling datasets.
+After LMM2 or LMM3 normalization the samples are very closely grouped according to run instead of the dilution factor. Only LMM1, which contains the peptide-run interaction, restore the correct relation between the samples. This finding, together with conclusions from the [datadriven_normalization](datadriven_normalization.html) notebook, cannot be overstated as it implies that correcting for peptide-run interaction is of utmost importance in obtaining valid inference from multi-run isobaric labeling datasets.
 
 ```{r}
 par(mfrow=c(2, 2))
@@ -254,7 +264,7 @@ There are only 19 proteins supposed to be differentially expressed in this data 
 
 ### Using spiked proteins only
 
-Therefore, let's see what the PCA plots look like if we were to only use the spiked proteins in the PCA. This time, both LMM1 and LMM2 successfully clustered the samples, but this check has only a theoretical value as in practice one does not for sure which proteins are differentially abundant. 
+Therefore, let's see what the PCA plots look like if we were to only use the spiked proteins in the PCA. This time, both LMM1 and LMM2 successfully clustered the samples, but this check has only a theoretical value as in practice one does not know for sure which proteins are differentially abundant. 
 
 ```{r, eval=length(spiked.proteins)>0}
 par(mfrow=c(2, 2))
@@ -365,10 +375,13 @@ To see whether the three Unit scales produce similar results on the detailed lev
 q-values of the three normalization models are moderately correlated. LMM2 and LMM3 q-values are generally larger than those of LMM1, confirming the drastically altered variance
 structures in the observations when the normalization model is misspecified (i.e., does not include the peptide-run interaction term). All q-values of the "raw" variant are constant (approximately 1), so the correlation coefficient could not be computed (NA).
 
+```{r}
+scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
+```
+
 When it comes to log fold changes, estimates are virtually not influenced at all by the three different normalization models. The spiked proteins fold change estimates (in orange) based on unnormalized (raw) data are in line with estimates based on normalized expression, emphasizing the successful conduct of the technical of the experiment and remarkable quality of the acquired data.
 
 ```{r}
-scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
 scatterplot_ils(dat.dea, logFC.cols, 'log2FC', spiked.proteins, referenceCondition)
 ```
 

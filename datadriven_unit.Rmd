@@ -150,7 +150,7 @@ dat.unit.w <- lapply(dat.unit.l, function(x){
   pivot_wider(data = x, id_cols=-one_of(c('Condition', 'BioReplicate')), names_from=Channel, values_from=response)})
 ```
 
-First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g. 
+First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g). 
 No need to split this per Run, because each row in this semi-wide format contains only values from one Run and each median calculation is independent of the other rows.
 
 ```{r, eval=!params$load_outputdata_p}
@@ -228,8 +228,7 @@ load(paste0('datadriven_unit_outdata', params$suffix_p, '.rda'))
 
 ## Boxplots
 
-These boxplots that for all variants the distributions are very similar and symmetrical. In contrast, the Sum summarization produces very skewed distributions. The means of the distributions for multiplicative unit scales (intensity, ratio) are 1 instead of zero because there we do median sweeping using division instead of subtraction.
-Although for all summarization methods the boxplots are centered after normalization, this skewness of the Sum summarized values is ominous.
+These boxplots that for all variants the distributions are similar and symmetrical. The means of the distributions for multiplicative unit scales (intensity, ratio) are 1 instead of zero because there we do median sweeping using division instead of subtraction.
 
 ```{r}
 # use (half-)wide format
@@ -431,7 +430,7 @@ if (length(spiked.proteins)>0) violinplot_ils(lapply(dat.dea, function(x) x[spik
 
 # Conclusions
 
-For the given data set, the differences in proteomic outcomes between all unit scale variants (log2 intensity, intensity, ratio) are quite small. The QC plots suggest that they produce qualitative outcomes, although the fold changes seem to experience an unusually large amount of ratio compression (probably inherent to the data set rather than the methodology). Using normalized ratios is identical to using untransformed intensities, and if you want to work on log2 scale, it doens't seem to matter whether you take the transform in the beginning or right before the DEA step.
+For the given data set, the differences in proteomic outcomes between all unit scale variants (log2 intensity, intensity, ratio) are quite small. The QC plots suggest that they produce qualitative outcomes, although the fold changes seem to experience an unusually large amount of ratio compression (probably inherent to the data set rather than the methodology). Using normalized ratios is identical to using untransformed intensities, and if you want to work on log2 scale, it doesn't seem to matter whether you take the transform in the beginning or right before the DEA step.
 
 # Session information
 

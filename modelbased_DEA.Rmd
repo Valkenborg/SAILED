@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 _This notebook is one in a series of many, where we explore how different data analysis strategies affect the outcome of a proteomics experiment based on isobaric labeling and mass spectrometry. Each analysis strategy or 'workflow' can be divided up into different components; it is recommend you read more about that in the [introduction notebook](intro.html)._
 </span>
 
-In this notebook specifically, we investigate the effect of varying the Differential Expression testing component on the outcome of the differential expression results. The four component variants are: **linear mixed-effects model**, **DEqMS**, **ANOVA* applied to the **protein-level** data, and **ANOVA** applied to the **PSM-level** data.
+In this notebook specifically, we investigate the effect of varying the Differential Expression testing component on the outcome of the differential expression results. The four component variants are: **linear mixed-effects model**, **DEqMS**, **ANOVA** applied to the **protein-level** data, and **ANOVA** applied to the **PSM-level** data.
 
 <span style="color: grey;">
 _The R packages and helper scripts necessary to run this notebook are listed in the next code chunk: click the 'Code' button. Each code section can be expanded in a similar fashion. You can also download the [entire notebook source code](modelbased_unit.Rmd)._
@@ -164,7 +164,7 @@ load(paste0('modelbased_DEA_outdata', params$suffix_p, '.rda'))
 
 ## Boxplot
 
-The normalization model consistently align the reporter ion intensity values.  
+The normalization model consistently aligns the reporter ion intensity values.  
 
 ```{r}
 par(mfrow=c(1,2))
@@ -336,10 +336,13 @@ To see whether the three Unit scales produce similar results on the detailed lev
 
 Regarding q-values, we can merely notice the higher correlation between the variants working with the same type of data (PSM or protein-level data).
 
+```{r}
+scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
+```
+
 Log fold changes originating from all variants are well correlated. We can merely notice that using PSM-level data lead to a bit more scattered values around the center of distributions.
 
 ```{r}
-scatterplot_ils(dat.dea, significance.cols, 'q-values', spiked.proteins, referenceCondition)
 scatterplot_ils(dat.dea, logFC.cols, 'log2FC', spiked.proteins, referenceCondition)
 ```
 

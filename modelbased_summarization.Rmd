@@ -372,7 +372,7 @@ A good way to assess the general trend of the fold change estimates on a more 'm
 
 Clearly, the empirical results _tend towards_ the theoretical truth, but not a single observation attained the fold change it should have attained. There is clearly a strong bias towards zero fold change, which may partly be explained by the ratio compression phenomenon in mass spectrometry, although the effect seems quite extreme here.
 
-Although, shape of spike-in protein log fold changes somewhat differ between the three variants, the underlying message is simple - there are no substantial differences.
+Although, shape of spike-in protein log fold changes somewhat differ between the three variants, the underlying message is simple - there are no substantial differences, at least in this particular dataset.
 
 ```{r}
 # plot theoretical value (horizontal lines) and violin per variant

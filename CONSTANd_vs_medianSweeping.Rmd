@@ -265,7 +265,7 @@ for (i in 1:n.comp.variants){
   pcaplot_ils(dat.norm.summ.w2[[variant.names[i]]] %>% select(-'Protein'), info=sample.info, paste('normalized', variant.names[i], sep='_'))}
 ```
 
-### Using spiked proteins only (if applicable)
+### Using spiked proteins only
 ```{r, eval=length(spiked.proteins)>0}
 par(mfrow=c(1, 2))
 for (i in 1:n.comp.variants){

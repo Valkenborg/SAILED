@@ -134,7 +134,7 @@ dat.norm.w <- emptyList(variant.names)
 ## median sweeping (1)
 
 Median sweeping means subtracting from each PSM quantification value the spectrum median (i.e., the row median computed across samples/channels) and the sample median (i.e., the column median computed across features). If the unit scale is set to intensities or ratios, the multiplicative variant of this procedure is applied: subtraction is replaced by division.
-First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g. 
+First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g). 
 No need to split this per Run, because each row in this semi-wide format contains only values from one Run and each median calculation is independent of the other rows.
 
 ```{r, eval=!params$load_outputdata_p}
@@ -145,7 +145,7 @@ dat.norm.w$median_sweeping[,channelNames] <- median_sweep(dat.norm.w$median_swee
 
 ## CONSTANd
 
-[CONSTANd](https://doi.org/doi:10.18129/B9.bioc.CONSTANd) ([Van Houtven et al.](https://doi.org/10.1101/2021.03.04.433870)) normalizes a data matrix by 'raking' iteratively along the rows and columns (i.e. multiplying each row or column with a particular number) such that the row means and column means equal 1.
+[CONSTANd](https://doi.org/doi:10.18129/B9.bioc.CONSTANd) ([Van Houtven et al.](https://doi.org/10.1016/j.jmb.2021.166966)) normalizes a data matrix by 'raking' iteratively along the rows and columns (i.e. multiplying each row or column with a particular number) such that the row means and column means equal 1.
 One can never attain these row and column constraints simultaneously, but the algorithm converges very fast to the desired precision.
 
 ```{r, eval=!params$load_outputdata_p}
@@ -174,7 +174,7 @@ display_dataframe_head(dat.norm.w$NOMAD[, channelNames])
 
 ## Quantile (1)
 
-Quantile normalization (As implemented by (Bolstad et al.)[https://doi.org/10.1093/bioinformatics/19.2.185]) makes the distribution (i.e., the values of the quantiles) of quantification values in different samples identical.
+Quantile normalization (As implemented by ([Bolstad et al.](https://doi.org/10.1093/bioinformatics/19.2.185)) makes the distribution (i.e., the values of the quantiles) of quantification values in different samples identical.
 We first apply it to each Run separately, and then re-scale the observations so that the mean observation within in each run is set equal to the mean observation across all runs.
 After summarization, we do a second pass on the matrix with data from all runs.
 

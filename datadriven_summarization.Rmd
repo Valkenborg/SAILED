@@ -125,7 +125,7 @@ dat.unit.w <- pivot_wider(data = dat.unit.l, id_cols=-one_of(c('Condition', 'Bio
 display_dataframe_head(dat.unit.w)
 ```
 
-First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g. 
+First, let's sweep the medians of all the rows, and do the columns later as suggested by [Herbrich at al.](https://doi.org/10.1021/pr300624g). 
 No need to split this per Run, because each row in this semi-wide format contains only values from one Run and each median calculation is independent of the other rows.
 
 ```{r}
@@ -437,6 +437,7 @@ for (i in 1:n.contrasts){
 A good way to assess the general trend of the fold change estimates on a more 'macroscopic' scale is to make a violin plot. Ideally, there will be some spike-in proteins that attain the expected fold change  (red dashed line) that corresponds to their condition, while most (background) protein log2 fold changes are situated around zero.
 
 Clearly, the empirical results _tend towards_ the theoretical truth, but not a single observation attained the fold change it should have attained. There is clearly a strong bias towards zero fold change, which may partly be explained by the ratio compression phenomenon in mass spectrometry, although the effect seems quite extreme here.
+
 It seems that Median summarization and iPQF produce very similar violins, while Sum summarization is again the odd one out. Even though the Sum-associated values are closer to their theoretically expected values, in light of the rest of our analysis it seems more plausible that this is due to the entire distribution suffering increased variability, rather than that the Sum summarization would produce more reliable outcomes.
 
 ```{r}
