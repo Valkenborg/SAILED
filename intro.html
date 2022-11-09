@@ -11,7 +11,7 @@
 
 <meta name="author" content="Piotr Prostko, Joris Van Houtven" />
 
-<meta name="date" content="2022-11-05" />
+<meta name="date" content="2022-11-08" />
 
 <title>Strategies for the analysis of isobarically labeled samples in mass spectrometry-based proteomics</title>
 
@@ -1836,7 +1836,7 @@ div.tocify {
 <h1 class="title toc-ignore">Strategies for the analysis of isobarically
 labeled samples in mass spectrometry-based proteomics</h1>
 <h4 class="author">Piotr Prostko, Joris Van Houtven</h4>
-<h4 class="date">November 05, 2022</h4>
+<h4 class="date">November 08, 2022</h4>
 
 </div>
 
@@ -2019,17 +2019,24 @@ red
 preparation</h2>
 <p>In the file <code>data_prep.R</code> you can find the details of all
 data preparation steps. Here, we list which PSMs were discarded or
-modified and why: 1. Use only data from Runs 1, 2, 4, 5. 1. Discard
-reference samples (TMT channels 126 and 131). 1. Discard PSMs with
-shared peptides (as done in <a href="https://doi.org/10.1074/mcp.RA120.002105">Ting et al.</a>). 1. Add
-simulated variability (see next section). 1. Reconstruct missing MS1
-Intensity column based on MS2 intensities (necessary for some component
-variants). 1. Discard duplicate PSMs due to the use of multiple search
-engine instances (which only change the score). 1. Discard PSMs of
-proteins that appear both in the background and spike-in. 1. Discard
-PSMs with Isolation Interference (%) &gt; 30. 1. Discard PSMs with NA
-entries in the quantification channels. 1. Discard PSMs of
-one-hit-wonder proteins.</p>
+modified and why:</p>
+<ol style="list-style-type: decimal">
+<li><p>Use only data from Runs 1, 2, 4, 5.</p></li>
+<li><p>Discard reference samples (TMT channels 126 and 131).</p></li>
+<li><p>Discard PSMs with shared peptides (as done in <a href="https://doi.org/10.1074/mcp.RA120.002105">Ting et
+al.</a>).</p></li>
+<li><p>Add simulated variability (see next section).</p></li>
+<li><p>Reconstruct missing MS1 Intensity column based on MS2 intensities
+(necessary for some component variants).</p></li>
+<li><p>Discard duplicate PSMs due to the use of multiple search engine
+instances (which only change the score).</p></li>
+<li><p>Discard PSMs of proteins that appear both in the background and
+spike-in.</p></li>
+<li><p>Discard PSMs with Isolation Interference (%) &gt; 30.</p></li>
+<li><p>Discard PSMs with NA entries in the quantification
+channels.</p></li>
+<li><p>Discard PSMs of one-hit-wonder proteins.</p></li>
+</ol>
 </div>
 <div id="simulated-biological-variability" class="section level2" number="3.2">
 <h2><span class="header-section-number">3.2</span> Simulated biological
@@ -2628,7 +2635,7 @@ make that possible, we equipped our .Rmd codes with several features
 that we will now briefly discuss.</p>
 <div id="input-data" class="section level3" number="3.4.1">
 <h3><span class="header-section-number">3.4.1</span> input data</h3>
-<p>The <a href="util/data_prep.R">data_prep.R</a> script process the
+<p>The <a href="util/data_prep.R">data_prep.R</a> script processes the
 data in a way required by our notebook files. This file has been written
 such that it fits the particular dataset used in our manuscript. With a
 little bit of effort, however, one can modify it such that it can become
@@ -2807,8 +2814,9 @@ with some parameters used throughout individual notebook files. This is
 how the resulting data should look like:</p>
 <pre class="r"><code>temp &lt;- readRDS(&quot;data/input_data.rds&quot;)
 
-# dat.l
-display_dataframe_head(temp$dat.l)</code></pre>
+cat(&quot;dat.l&quot;)</code></pre>
+<pre><code>## dat.l</code></pre>
+<pre class="r"><code>display_dataframe_head(temp$dat.l)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3230,8 +3238,9 @@ FALSE
 </tbody>
 </table>
 </div>
-<pre class="r"><code># dat.w
-display_dataframe_head(temp$dat.w)</code></pre>
+<pre class="r"><code>cat(&quot;dat.w&quot;)</code></pre>
+<pre><code>## dat.w</code></pre>
+<pre class="r"><code>display_dataframe_head(temp$dat.w)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3737,6 +3746,8 @@ FALSE
 </tbody>
 </table>
 </div>
+<pre class="r"><code>cat(&quot;data.params&quot;)</code></pre>
+<pre><code>## data.params</code></pre>
 <pre class="r"><code>temp$data.params</code></pre>
 <pre><code>## $referenceCondition
 ## [1] &quot;0.5&quot;
@@ -3793,8 +3804,8 @@ analysed, 50 means that 50 proteins will be randomly sampled.</li>
 <h3><span class="header-section-number">3.4.3</span> Master program</h3>
 <p>We also prepared an R script with which it is possible to
 conveniently knit all notebooks from the level of one file. This program
-is called <code>data/master_program.R</code>. This program refers to the
-notebook parameter described above.</p>
+is called <code>data/master_program.R</code>, and inside you will find
+references to the R markdown parameters explained above.</p>
 </div>
 <div id="install-the-required-r-packages" class="section level3" number="3.4.4">
 <h3><span class="header-section-number">3.4.4</span> Install the
