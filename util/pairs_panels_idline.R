@@ -1,5 +1,6 @@
 # just copy & paste from pairs.panels source code
 # y=x identity line instead of lm=T
+# when cor = FALSE, then upper.panel = NULL
 # col.points and cex.points arg added when lm=TRUE
 
 pairs.panels.idline <- function (x, smooth = TRUE, scale = FALSE, density = TRUE, ellipses = TRUE, 
@@ -240,13 +241,13 @@ pairs.panels.idline <- function (x, smooth = TRUE, scale = FALSE, density = TRUE
             lower.panel = panel.smoother, pch = pch, ...)
     }
     else {
-      pairs(x, diag.panel = panel.hist.density, upper.panel = panel.smoother, 
+      pairs(x, diag.panel = panel.hist.density, upper.panel = NULL, 
             lower.panel = panel.smoother, pch = pch, ...)
     }
   }
   else {
     if (!cor) {
-      pairs(x, diag.panel = panel.hist.density, upper.panel = panel.lm, 
+      pairs(x, diag.panel = panel.hist.density, upper.panel = NULL, 
             lower.panel = panel.lm, pch = pch, ...)
     }
     else {

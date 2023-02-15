@@ -226,7 +226,9 @@ source('util/pairs_panels_idline.R')
 
 scatterplot_ils <- function(dat, cols, stat, spiked.proteins, refCond){
   select.stat <- match.arg(stat, c('p-values', 'log2FC', 'q-values'))
-  title <- paste("Pearson's correlation of", select.stat)
+  if (select.stat == 'log2FC') {
+    title <- paste("Pearson's correlation of", select.stat)
+  } else title = ''
   contrast.names <- unlist(lapply(stri_split(cols, fixed='_'), function(x) x[2]))
   
   # align rows (proteins) between DEA variants
