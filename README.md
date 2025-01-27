@@ -17,3 +17,7 @@ If you wish to see the notebooks' underlying R code, visit the [GitHub source re
 
 ### Extra analyses
 - [CONSTANd and median sweeping normalization methods applied to data on the appropriate scales](CONSTANd_vs_medianSweeping.html)
+
+\
+Enjoy the read!\
+Piotr Prostko \& Joris Van Houtven
